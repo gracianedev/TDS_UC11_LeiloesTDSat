@@ -1,3 +1,6 @@
+
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -144,8 +147,25 @@ public class cadastroVIEW extends javax.swing.JFrame {
         String nome = cadastroNome.getText();
         String valor = cadastroValor.getText();
         String status = "A Venda";
+        
+          if ((nome == null || nome.trim().isEmpty()) && valor == null || valor.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Nome e Valor do produto não podem ser vazios ou inválidos.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return ; 
+        }
+
+                
         produto.setNome(nome);
-        produto.setValor(Integer.parseInt(valor));
+        // Validação do campo nome
+        if (!isNomeValido(produto.getNome())) {
+            JOptionPane.showMessageDialog(null, "Nome do produto inválido! O nome não pode ser vazio ou conter apenas espaços.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return ;  
+        }
+        produto.setValor(Integer.parseInt(valor) );
+         // Validação do campo valor
+        if (!isNumeroValido(produto.getValor())) {
+            JOptionPane.showMessageDialog(null, "Valor inválido! O valor deve ser maior que 0.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return ;  // Retorna 0 para indicar que o cadastro não foi realizado
+        }
         produto.setStatus(status);
         
         ProdutosDAO produtodao = new ProdutosDAO();
@@ -197,6 +217,17 @@ public class cadastroVIEW extends javax.swing.JFrame {
         });
     }
 
+    
+    
+// Função para verificar se o nome do produto é válido
+private boolean isNomeValido(String nome) {
+    return nome != null && !nome.trim().isEmpty();
+}
+
+// Função para verificar se o valor fornecido é válido
+private boolean isNumeroValido(int valor) {
+    return valor > 0;
+}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastrar;
     private javax.swing.JButton btnProdutos;
