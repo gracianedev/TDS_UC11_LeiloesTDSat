@@ -105,12 +105,90 @@ public ArrayList<ProdutosDTO> listarProdutos() {
             }
         
         } catch (SQLException e) {
-            System.out.println("Erro ao buscar filmes: " + e.getMessage());
+            System.out.println("Erro ao buscar produtos: " + e.getMessage());
         } finally {
             desconectar();
         }
         
         return listagem;
     }
+
+public void venderProduto(int id) {
+    ProdutosDTO produto = null;
+
+    try {
+        conn = new conectaDAO().connectDB();
+
+        String sql = "SELECT * FROM produtos WHERE id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, id);
+
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            produto = new ProdutosDTO();
+            produto.setId(rs.getInt("id"));
+            produto.setNome(rs.getString("nome"));
+            produto.setStatus(rs.getString("status"));
+        }
+
+        if (produto == null) {
+            JOptionPane.showMessageDialog(null, "Produto não encontrado.");
+            return;
+        }
+
+        if ("Vendido".equals(produto.getStatus())) {
+            JOptionPane.showMessageDialog(null, "Não é possível realizar a venda, o produto " + produto.getNome() + "(id " + produto.getId() + " ) já foi vendido.");
+        } else {
+            String updateSql = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+            PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+            updateStmt.setInt(1, id);
+            int rowsAffected = updateStmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Alterado o status do produto " + produto.getNome() + "(id " + produto.getId() + " ) para Vendido.");
+            }
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Erro ao buscar ou atualizar o produto: " + e.getMessage());
+    } finally {
+        desconectar();
+    }
+}
+
+public ArrayList<ProdutosDTO> listarProdutosVendidos(){
+    
+     ArrayList<ProdutosDTO>  listagem = new ArrayList <>();
+    try {
+     
+ 
+        // Conexão com o banco de dados
+        conn = new conectaDAO().connectDB();
+        
+        String sql = "SELECT * FROM produtos WHERE status = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+                    stmt.setString(1, "Vendido");
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                ProdutosDTO produto = new ProdutosDTO(); 
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setValor(rs.getInt("valor"));
+                produto.setStatus(rs.getString("status"));
+                listagem.add(produto);
+            }
+        
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar produtos: " + e.getMessage());
+        } finally {
+            desconectar();
+        }
+        
+        return listagem;
+    }
+    
 
 }
