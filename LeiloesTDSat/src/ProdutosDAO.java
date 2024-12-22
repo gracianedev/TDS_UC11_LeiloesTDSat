@@ -157,4 +157,38 @@ public void venderProduto(int id) {
     }
 }
 
+public ArrayList<ProdutosDTO> listarProdutosVendidos(){
+    
+     ArrayList<ProdutosDTO>  listagem = new ArrayList <>();
+    try {
+     
+ 
+        // Conexão com o banco de dados
+        conn = new conectaDAO().connectDB();
+        
+        String sql = "SELECT * FROM produtos WHERE status = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+                    stmt.setString(1, "Vendido");
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                ProdutosDTO produto = new ProdutosDTO(); 
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setValor(rs.getInt("valor"));
+                produto.setStatus(rs.getString("status"));
+                listagem.add(produto);
+            }
+        
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar produtos: " + e.getMessage());
+        } finally {
+            desconectar();
+        }
+        
+        return listagem;
+    }
+    
+
 }
