@@ -74,7 +74,6 @@ public void desconectar() {
             System.out.println("Conexão fechada...");
         }
     } catch (SQLException ex) {
-        // Caso ocorra algum erro ao fechar a conexão ou o PreparedStatement
         System.out.println("Erro ao fechar a conexão: " + ex.getMessage());
     }
 }
@@ -84,7 +83,33 @@ public void desconectar() {
 
 
 public ArrayList<ProdutosDTO> listarProdutos() {
+ 
+    ArrayList<ProdutosDTO>  listagem = new ArrayList <>();
+    try {
+     
+ 
+        // Conexão com o banco de dados
+        conn = new conectaDAO().connectDB();
+        
+        String sql = "SELECT * FROM produtos";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
+            while (rs.next()) {
+                ProdutosDTO produto = new ProdutosDTO(); 
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setValor(rs.getInt("valor"));
+                produto.setStatus(rs.getString("status"));
+                listagem.add(produto);
+            }
+        
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar filmes: " + e.getMessage());
+        } finally {
+            desconectar();
+        }
+        
         return listagem;
     }
 
